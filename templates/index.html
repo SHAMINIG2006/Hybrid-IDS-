@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Hybrid IDS</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark text-white">
+
+<div class="container mt-5">
+
+<h2 class="text-center">Hybrid Intrusion Detection System</h2>
+
+<form action="/predict" method="post">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label>Source Bytes</label>
+<input type="number" name="src_bytes" class="form-control">
+
+<label>Destination Bytes</label>
+<input type="number" name="dst_bytes" class="form-control">
+
+<label>Same Service Rate</label>
+<input type="number" step="0.01" name="same_rate" class="form-control">
+
+<label>Different Service Rate</label>
+<input type="number" step="0.01" name="diff_rate" class="form-control">
+
+<label>Service</label>
+<input type="number" name="service" class="form-control">
+
+</div>
+
+<div class="col-md-6">
+
+<label>Destination Host Service Count</label>
+<input type="number" name="srv_count" class="form-control">
+
+<label>Destination Host Error Rate</label>
+<input type="number" step="0.01" name="error_rate" class="form-control">
+
+<label>Connection Duration</label>
+<input type="number" name="duration" class="form-control">
+
+<label>Flag</label>
+<input type="number" name="flag" class="form-control">
+
+<label>Logged In</label>
+<input type="number" name="logged" class="form-control">
+
+</div>
+
+</div>
+
+<br>
+
+<button class="btn btn-warning w-100">Detect Attack</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
