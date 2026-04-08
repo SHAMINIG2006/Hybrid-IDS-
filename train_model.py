@@ -3,40 +3,47 @@ import numpy as np
 import joblib
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import IsolationForest
+from sklearn.ensemble import RandomForestClassifier, IsolationForest
 
+# 1. Load Dataset
 df = pd.read_csv("dataset.csv")
 
-# Encode categorical columns
-categorical_cols = ['protocol_type','service','flag']
-
-encoder = LabelEncoder()
+# 2. Encode categorical columns & Save Encoders
+categorical_cols = ['protocol_type', 'service', 'flag']
+encoders = {}
 
 for col in categorical_cols:
-    df[col] = encoder.fit_transform(df[col])
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    encoders[col] = le  # Store each encoder
 
-# Binary label
+# 3. Create Binary label for Anomaly Detection
 df['attack_flag'] = df['class'].apply(lambda x: 0 if x == "normal" else 1)
 
-X = df.drop(['class','attack_flag'], axis=1)
+# 4. Prepare Features (X) and Target (y)
+X = df.drop(['class', 'attack_flag'], axis=1)
 y = df['attack_flag']
 
-# Scaling
+# 5. Scaling
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Anomaly Model
-anomaly_model = IsolationForest(contamination=0.1)
+# 6. Train Anomaly Model (Isolation Forest)
+# Returns -1 for outliers, 1 for inliers
+anomaly_model = IsolationForest(contamination=0.1, random_state=42)
 anomaly_model.fit(X_scaled)
 
-# Signature Model
-signature_model = DecisionTreeClassifier(max_depth=6)
-signature_model.fit(X_scaled,y)
+# 7. Train Attack Classifier (Random Forest)
+# Swapped DecisionTree for RandomForest as per your report
+attack_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
+attack_model.fit(X_scaled, y)
 
-# Save models
-joblib.dump(anomaly_model,"model_anomaly.pkl")
-joblib.dump(signature_model,"model_signature.pkl")
-joblib.dump(scaler,"scaler.pkl")
+# 8. SAVE EVERYTHING
+joblib.dump(anomaly_model, "anomaly_model.pkl")
+joblib.dump(attack_model, "attack_model.pkl")
+joblib.dump(scaler, "scaler.pkl")
+joblib.dump(encoders, "encoders.pkl") # Save dictionary of encoders
+joblib.dump(X.columns.tolist(), "feature_order.pkl")
+joblib.dump(X.mean().to_dict(), "feature_means.pkl")
 
-print("Hybrid IDS model trained and saved")
+print("--- Training Complete with Random Forest ---")
